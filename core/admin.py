@@ -2,11 +2,17 @@
 Django admin customization.
 """
 
+from django.contrib import admin
 from django.contrib.admin import register, ModelAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from core.models import Autor, Categoria, Editora, Livro, User
+from core.models import Autor, Categoria, Compra, Editora, ItensCompra, Livro, User
+
+
+class ItensCompraInline(admin.TabularInline):
+    model = ItensCompra
+    extra = 1
 
 
 @register(User)
@@ -80,6 +86,16 @@ class EditoraAdmin(ModelAdmin):
     list_per_page = 10
 
 
+@register(Compra)
+class CompraAdmin(ModelAdmin):
+    list_display = ('usuario', 'status')
+    search_fields = ('usuario__email', 'status')
+    list_filter = ('usuario', 'status')
+    ordering = ('usuario', 'status')
+    list_per_page = 10
+    inlines = [ItensCompraInline]
+
+
 @register(Livro)
 class LivroAdmin(ModelAdmin):
     list_display = ('titulo', 'editora', 'categoria')
@@ -87,3 +103,11 @@ class LivroAdmin(ModelAdmin):
     list_filter = ('editora', 'categoria')
     ordering = ('titulo', 'editora', 'categoria')
     list_per_page = 25
+
+
+@register(ItensCompra)
+class ItensCompraAdmin(ModelAdmin):
+    list_display = ('compra', 'livro', 'quantidade')
+    list_filter = ('compra', 'livro')
+    ordering = ('compra', 'livro')
+    list_per_page = 10
