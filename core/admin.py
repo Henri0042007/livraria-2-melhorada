@@ -88,12 +88,16 @@ class EditoraAdmin(ModelAdmin):
 
 @register(Compra)
 class CompraAdmin(ModelAdmin):
-    list_display = ('usuario', 'status')
-    search_fields = ('usuario__email', 'status')
-    list_filter = ('usuario', 'status')
+    list_display = ('usuario', 'status', 'total_formatado')  # mostra na listagem
     ordering = ('usuario', 'status')
     list_per_page = 10
     inlines = [ItensCompraInline]
+    readonly_fields = ("total_formatado",)
+
+    @admin.display(description="Total")
+    def total_formatado(self, obj):
+        """Exibe R$ 123,45 em vez de 123.45."""
+        return f"R$ {obj.total:.2f}"
 
 
 @register(Livro)
